@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Extrol — Track Your Fuel Expenses</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+      .app{
+        backdrop-filter: blur(7px);
+        z-index: 11;
+        position: relative;
+
+      }
+    /* Landing page specific styles */
+    .hero {
+      background: linear-gradient(135deg, #1a237e, #283593);
+      color: white;
+      padding: 4rem 2rem;
+      text-align: center;
+      border-radius: 8px;
+      margin-bottom: 2rem;
+    }
+    
+    .hero h1 {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
+    
+    .hero p {
+      font-size: 1.2rem;
+      max-width: 600px;
+      margin: 0 auto 2rem;
+      opacity: 0.9;
+    }
+    
+    .cta-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+    
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 2rem;
+      margin: 3rem 0;
+    }
+    
+    .feature-card {
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      background: rgba(255, 255, 255, 0);
+      border-radius: 8px;
+      padding: 1.5rem;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      transition: transform 0.3s ease;
+    }
+    
+    .feature-card:hover {
+      transform: translateY(-5px);
+    }
+    
+    .feature-card h3 {
+      color: #1a237e;
+      margin-bottom: 1rem;
+    }
+    
+    .feature-icon {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      color: #3949ab;
+    }
+  
+  </style>
+</head>
+<body>
+  <div id="preloader" class="show"> <img  src="https://hackernoon.com/images/0*zzg_YoHtb5wXe98Z.gif" alt=""></div>
+  <script>
+    window.addEventListener('load', function() {
+      setTimeout(() => {
+        document.getElementById('preloader').classList.remove('show');
+      }, 3000);
+    });
+  </script>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">Extrol</div>
+      <div class="actions">
+        <a href="login.html" class="btn">Login</a>
+        <a href="signup.html" class="btn primary">Sign Up</a>
+      </div>
+    </header>
+
+    <main class="container">
+      <section class="hero">
+        <h1>Track Your Fuel Expenses Effortlessly</h1>
+        <p>Extrol helps you monitor and analyze your petrol expenses, giving you insights to save money and manage your budget better.</p>
+        <div class="cta-buttons">
+          <a href="signup.html" class="btn primary">Get Started</a>
+        </div>
+      </section>
+
+      <section class="features">
+        <div class="feature-card">
+          <div class="feature-icon">📊</div>
+          <h3>Track Expenses</h3>
+          <p>Record every fuel refill with date, price, and notes to keep a complete history of your expenses.</p>
+        </div>
+        
+        <div class="feature-card">
+          <div class="feature-icon">📈</div>
+          <h3>View Statistics</h3>
+          <p>Get insights on your total spending, average price, and consumption patterns over time.</p>
+        </div>
+        
+        <div class="feature-card">
+          <div class="feature-icon">🔍</div>
+          <h3>Search & Filter</h3>
+          <p>Easily find specific entries with powerful search and sorting capabilities.</p>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const API_BASE = 'https://extrol-api-production.up.railway.app';
+
+    async function tryRedirectWithToken() {
+      const token = localStorage.getItem('extrol_token');
+      const user = localStorage.getItem('extrol_user');
+      if (!token || !user) return;
+      try {
+        const res = await fetch(API_BASE + '/api/entries?limit=20', {
+          headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
+          mode: 'cors'
+        });
+        if (!res.ok) {
+          if (res.status === 401) {
+            localStorage.removeItem('extrol_token');
+            localStorage.removeItem('extrol_user');
+          }
+          return; // stay on landing if invalid
+        }
+        const entries = await res.json();
+        localStorage.setItem('extrol_prefetch_entries', JSON.stringify(entries));
+        window.location.href = 'dashboard.html';
+      } catch (e) {
+        // network issue: keep user on landing page
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', tryRedirectWithToken);
+  </script>
+</body>
+</html>

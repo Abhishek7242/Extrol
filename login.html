@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Login - Extrol</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <style>
+      /* styles.css - modern attractive login UI + button loader */
+
+/* Reset & base */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+:root{
+  --bg:#0f1724;          /* deep navy */
+  --card:#0b1220;        /* card */
+  --muted:#9aa4b2;
+  --accent:#6ee7b7;      /* mint */
+  --accent-2:#7dd3fc;    /* sky */
+  --glass: rgba(255,255,255,0.03);
+  --radius:14px;
+  --card-pad:28px;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+               Roboto, "Helvetica Neue", Arial;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+}
+
+/* Page background */
+html,body { height:100%; }
+body{
+  background:
+    radial-gradient(600px 400px at 90% 10%, rgba(125,211,252,0.05), transparent 10%),
+    radial-gradient(500px 350px at 10% 90%, rgba(110,231,183,0.035), transparent 10%),
+    linear-gradient(180deg, #071021 0%, var(--bg) 100%);
+  color: #e6eef6;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding: 5px;
+}
+
+/* App container sizing */
+.app {
+  width:100%;
+  max-width:1000px;
+  min-height: 560px;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 10px 40px rgba(2,6,23,0.7);
+  grid-template-columns: 1fr 420px;
+  gap: 0;
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+}
+
+/* Left hero / illustration area */
+
+
+/* topbar inside card area */
+.topbar{
+  grid-column: 2 / 3;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding: 18px 28px;
+  background: transparent;
+  border-bottom: 1px solid rgba(255,255,255,0.02);
+}
+.brand{
+  font-weight:700;
+  font-size:20px;
+  letter-spacing:0.6px;
+  color: white;
+}
+.actions .btn{ font-size:14px; padding:8px 12px; }
+
+/* main content (right column) */
+.container{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.01), rgba(0,0,0,0.02));
+}
+
+/* auth card */
+.auth-container{
+  width:100%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.auth-card{
+  width:100%;
+  max-width:360px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  border-radius: var(--radius);
+  padding: var(--card-pad);
+  box-shadow: 0 8px 30px rgba(2,6,23,0.5);
+  border: 1px solid rgba(255,255,255,0.03);
+}
+
+/* heading */
+.auth-card h2{
+  font-size:22px;
+  margin-bottom:16px;
+  color: #e8f2fb;
+}
+
+/* form */
+.form-group{ margin-bottom:14px; display:flex; flex-direction:column; gap:8px; }
+.form-group label{
+  color:var(--muted);
+  font-size:13px;
+}
+.form-group input{
+  background: var(--glass);
+  border: 1px solid rgba(255,255,255,0.03);
+  padding: 12px 14px;
+  border-radius: 10px;
+  color: #e9f4ff;
+  outline: none;
+  font-size:14px;
+  transition: box-shadow .18s ease, border-color .12s ease;
+}
+.form-group input::placeholder{ color: rgba(230,238,246,0.35); }
+.form-group input:focus{
+  box-shadow: 0 6px 22px rgba(125,211,252,0.06);
+  border-color: rgba(125,211,252,0.28);
+}
+
+/* actions */
+.form-actions{ margin-top:10px; display:flex; gap:10px; align-items:center; }
+.btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  padding:10px 14px;
+  border-radius:12px;
+  border: none;
+  cursor:pointer;
+  font-weight:600;
+  background: transparent;
+  color: var(--accent-2);
+  transition: transform .12s ease, box-shadow .12s ease, opacity .12s ease;
+  text-decoration:none;
+  -webkit-tap-highlight-color: transparent;
+}
+.btn:hover{ transform: translateY(-3px); }
+.btn:active{ transform: translateY(0); }
+
+.btn.primary{
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  color: #062028;
+  padding:12px 16px;
+  box-shadow: 0 8px 22px rgba(110,231,183,0.06), inset 0 -1px rgba(0,0,0,0.08);
+}
+
+/* form-footer */
+.form-footer{ margin-top:12px; color:var(--muted); font-size:14px; }
+.form-footer a{ color:var(--accent-2); text-decoration:none; font-weight:600; }
+
+/* toast */
+.toast{
+  position: fixed;
+  left:50%;
+  bottom:28px;
+  transform: translateX(-50%);
+  background: rgba(6,18,28,0.9);
+  color: #e6f4f0;
+  padding:10px 16px;
+  border-radius:10px;
+  box-shadow: 0 8px 26px rgba(2,6,23,0.6);
+  font-size:14px;
+  z-index:9999;
+}
+
+/* ===== Loader on the login button (no text) =====
+   Uses .loading class to show spinner and hide button text
+   You can toggle .loading on the button element from JS.
+*/
+.btn.loading{
+  position: relative;
+  color: transparent !important;        /* hide the text while spinner shows */
+  pointer-events: none;                 /* prevent clicks while loading */
+}
+
+/* spinner */
+.btn.loading::after{
+  content: "";
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.18);
+  border-top-color: rgba(255,255,255,0.95);
+  animation: spin 0.9s linear infinite;
+  box-shadow: 0 2px 10px rgba(2,6,23,0.5);
+}
+
+/* smaller for smaller viewports */
+@media (max-width:900px){
+  .app{ grid-template-columns: 1fr; max-width:720px; }
+  .app::before{ display:none; }
+  .topbar{ grid-column: auto; padding:12px 18px; }
+}
+
+/* micro animations */
+@keyframes spin{ to { transform: rotate(360deg); } }
+
+    </style>
+  
+    <div class="app">
+      <header class="topbar">
+        <div class="brand">Extrol</div>
+        <div class="actions">
+          <a href="index.html" class="btn">Home</a>
+        </div>
+      </header>
+
+      <main class="container">
+        <div class="auth-container">
+          <div class="auth-card">
+            <h2>Login</h2>
+            <div class="form-group">
+              <label for="email">Email</label>
+              <input type="email" id="email" placeholder="Enter your email" />
+            </div>
+            <div class="form-group">
+              <label for="password">Password</label>
+              <input
+                type="password"
+                id="password"
+                placeholder="Enter your password"
+              />
+            </div>
+            <div class="form-actions">
+              <button id="loginBtn" class="btn primary">Login</button>
+            </div>
+            <div class="form-footer">
+              <p>Don't have an account? <a href="signup.html">Sign up</a></p>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- Simple toast -->
+    <div id="toast" class="toast" hidden></div>
+
+    <script>
+      // DOM Elements
+      const emailInput = document.getElementById("email");
+      const passwordInput = document.getElementById("password");
+      const loginBtn = document.getElementById("loginBtn");
+      const toast = document.getElementById("toast");
+
+      // API Base URL
+      const API_BASE = "https://extrol-api-production.up.railway.app";
+
+      // Helper functions
+      function showToast(text, time = 2500) {
+        toast.textContent = text;
+        toast.hidden = false;
+        setTimeout(() => (toast.hidden = true), time);
+      }
+
+      // Login handler
+      async function loginHandler() {
+        loginBtn.classList.add('loading');
+loginBtn.disabled = true;
+
+        const email = emailInput.value.trim();
+        const password = passwordInput.value;
+
+        if (!email || !password) {
+          showToast("Please enter email and password");
+          return;
+        }
+
+        try {
+          const res = await fetch(API_BASE + "/api/auth/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, password }),
+          });
+
+          const data = await res.json();
+
+          if (!res.ok) {
+            // on failure before returning:
+loginBtn.classList.remove('loading');
+loginBtn.disabled = false;
+
+            showToast(data.error || "Login failed");
+            return;
+          }
+
+          // Save auth data to localStorage
+          localStorage.setItem("extrol_token", data.token);
+          localStorage.setItem("extrol_user", JSON.stringify(data.user));
+
+          showToast("Login successful! Redirecting...");
+
+          // Redirect to dashboard page after successful login
+          setTimeout(() => {
+            window.location.href = "dashboard.html";
+          }, 1000);
+        } catch (e) {
+          showToast("Network error. Please try again.");
+        }
+      }
+
+      // Event listeners
+      loginBtn.addEventListener("click", loginHandler);
+
+      // Allow Enter key to submit the form
+      passwordInput.addEventListener("keypress", function (e) {
+        if (e.key === "Enter") {
+          loginHandler();
+        }
+      });
+    </script>
+  </body>
+</html>
