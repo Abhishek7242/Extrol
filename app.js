@@ -166,12 +166,8 @@ function logout() {
     // authArea.hidden = false;
 
     // Redirect to home page
-<<<<<<< HEAD
     window.location.href = '/';
     // window.location.href = '/Extrol/';
-=======
-    window.location.href = '/Extrol/';
->>>>>>> def37487c60d5698db53c0125e8b74d8593c9c6f
 }
   
 
