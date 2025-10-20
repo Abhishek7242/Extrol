@@ -28,6 +28,7 @@ header{
   position: fixed;
   width: 100vw;
   height: 100vh;
+  background: black;
   transition: all 0.3s ease-in-out;
 }
 #preloader img{
