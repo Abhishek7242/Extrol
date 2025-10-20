@@ -42,6 +42,8 @@ function showAddModal() {
 }
 
 function hideModal() {
+    modalSave.classList.remove('loading');
+    modalSave.disabled = false;
     modalBackdrop.style.display = 'none';
     state.editingId = null;
 }
@@ -165,6 +167,7 @@ function logout() {
 
     // Redirect to home page
     window.location.href = '/';
+    // window.location.href = '/Extrol/';
 }
   
 
@@ -283,6 +286,8 @@ modalSave.addEventListener('click', async () => {
     const d = modalDate.value || new Date().toISOString().slice(0, 10);
     const p = parseFloat(modalPrice.value || 0);
     const n = modalNote.value || '';
+    modalSave.classList.add('loading');
+    modalSave.disabled = true;
     if (!p || p <= 0) { showToast('Enter a valid price'); return; }
     try {
         if (state.editingId) {
